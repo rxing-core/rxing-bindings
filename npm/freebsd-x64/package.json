@@ -1,0 +1,18 @@
+{
+  "name": "@rxing/rxing-freebsd-x64",
+  "version": "0.0.0",
+  "os": [
+    "freebsd"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "rxing.freebsd-x64.node",
+  "files": [
+    "rxing.freebsd-x64.node"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
