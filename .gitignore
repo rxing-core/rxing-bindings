@@ -198,7 +198,6 @@ $RECYCLE.BIN/
 __test__/__qrcode.jpg
 
 .idea
-.yarn
 
 /*.js
 /*.d.ts
