@@ -1,6 +1,17 @@
 {
   "name": "@rxing/rxing",
   "version": "0.0.1",
+  "description": "Node.js bindings for the rxing library, which is a Rust port of the ZXing barcode library.",
+  "keywords": [
+    "rxing",
+    "zxing",
+    "barcode",
+    "qrcode",
+    "encode",
+    "decode",
+    "rust",
+    "napi"
+  ],
   "main": "index.js",
   "types": "index.d.ts",
   "napi": {

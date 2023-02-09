@@ -4,6 +4,7 @@ use napi::bindgen_prelude::*;
 use rxing::BarcodeFormat;
 
 #[napi(js_name = "BarcodeFormat")]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum JsBarcodeFormat {
     /** Aztec 2D barcode format. */
     AZTEC,

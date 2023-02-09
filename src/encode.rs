@@ -1,12 +1,10 @@
 use std::collections::HashMap;
-use std::error::Error;
 use std::fs::File;
-use std::io::Read;
+use std::io::{Cursor, Write};
 
+use image::DynamicImage;
 use napi::bindgen_prelude::Buffer;
 use rxing::{EncodeHintType, EncodeHintValue, EncodingHintDictionary, MultiFormatWriter, Writer};
-use rxing::helpers::save_file;
-use tempfile::Builder;
 
 use crate::JsBarcodeFormat;
 
@@ -34,6 +32,22 @@ pub struct EncodeOptions {
     pub output_file: Option<String>,
 }
 
+/**
+ * Encode a barcode from a string, returning a buffer representing the image
+ *
+ * @param {string} data The data to encode
+ * @param {EncodeOptions} [options] Optional options to pass to the encoder
+ *
+ * @returns {Buffer|null} A buffer representing the encoded barcode, or `null` if the barcode could not be encoded or encountered an error
+ *
+ * @example
+ * const { encode } = require('@rxing/rxing');
+ * const fs = require('fs');
+ *
+ * const data = 'Hello World!';
+ * const buffer = encode(data);
+ * fs.writeFileSync('hello-world.png', buffer);
+ */
 #[napi]
 pub fn encode(data: String, options: Option<EncodeOptions>) -> Option<Buffer> {
     let options = options.unwrap_or_default();
@@ -41,7 +55,11 @@ pub fn encode(data: String, options: Option<EncodeOptions>) -> Option<Buffer> {
 
     let barcode_format = options.barcode_format.unwrap_or(JsBarcodeFormat::QrCode);
     let width = options.width.unwrap_or(200);
-    let height = options.height.unwrap_or(200);
+    let height = options.height.unwrap_or_else(|| if barcode_format == JsBarcodeFormat::QrCode{
+        width
+    } else {
+        200
+    });
     let margin = options.margin.unwrap_or(0);
 
     hints.insert(EncodeHintType::MARGIN, EncodeHintValue::Margin(margin.to_string()));
@@ -108,44 +126,30 @@ pub fn encode(data: String, options: Option<EncodeOptions>) -> Option<Buffer> {
         &barcode_format.into(),
         width as i32,
         height as i32,
-        &hints) {
-        if let Some(file_path) = file_path(options.output_file) {
-            if save_file(&file_path, &bit_matrix).is_ok() {
-                if let Ok(content) = read_file(&file_path) {
-                    return Some(Buffer::from(content));
+        &hints,
+    ) {
+        let image: DynamicImage = bit_matrix.into();
+        let mut bytes: Vec<u8> = Vec::new();
+
+        if image.write_to(&mut Cursor::new(&mut bytes), image::ImageOutputFormat::Jpeg(100)).is_ok() {
+            if let Some(file_path) = options.output_file {
+                if write_to_file(&file_path, &bytes).is_ok() {
+                    Some(Buffer::from(bytes))
+                } else {
+                    None
                 }
+            } else {
+                Some(Buffer::from(bytes))
             }
-        }
-    }
-    None
-}
-
-fn file_path(output_file: Option<String>) -> Option<String> {
-    let output_file = output_file.unwrap_or_default();
-    let mut file_path = None;
-
-    if output_file.is_empty() {
-        let tempfile = Builder::new()
-            .prefix("rxing")
-            .suffix(".jpg")
-            .rand_bytes(5)
-            .tempfile();
-
-        if let Ok(tempfile) = tempfile {
-            if let Some(file_name) = tempfile.path().to_str() {
-                file_path = Some(file_name.to_string());
-            }
+        } else {
+            None
         }
     } else {
-        file_path = Some(output_file);
+        None
     }
-
-    file_path
 }
 
-fn read_file(file_path: &str) -> Result<Vec<u8>, Box<dyn Error>> {
-    let mut file = File::open(file_path)?;
-    let mut buffer = Vec::new();
-    file.read_to_end(&mut buffer)?;
-    Ok(buffer)
+fn write_to_file(file_path: &str, bytes: &[u8]) -> Result<(), std::io::Error> {
+    let mut file = File::create(file_path)?;
+    file.write_all(bytes)
 }

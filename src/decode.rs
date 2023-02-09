@@ -2,8 +2,12 @@
 
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
+use std::str;
 
-use napi::bindgen_prelude::*;
+use base64::Engine;
+use base64::engine::general_purpose;
+use data_url::DataUrl;
+use napi::bindgen_prelude::Either;
 use rxing::{BarcodeFormat, DecodeHintType, DecodeHintValue, DecodingHintDictionary, RXingResult};
 
 use crate::barcode_format::JsBarcodeFormat;
@@ -44,8 +48,24 @@ impl From<RXingResult> for DecodeResult {
     }
 }
 
+/**
+ * Decode a barcode from a file or base64 string
+ *
+ * @param {string} input Either a path to a file or a base64 string
+ * @param {DecodeOptions} [options] Optional options to pass to the decoder
+ *
+ * @returns {DecodeResult|Array<DecodeResult>|null} The decode result or a list of decode results if `options.decodeMulti` is set to `true`, or `null` if the barcode could not be decoded or encountered an error
+ *
+ * @example
+ * const { decode } = require('@rxing/rxing');
+ * const result = decode('path/to/file.png');
+ * console.log(result.text);
+ * // Or
+ * const result = decode('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA');
+ * console.log(result.text);
+ */
 #[napi]
-pub fn decode(file_name: String, options: Option<DecodeOptions>) -> Option<Either<DecodeResult, Vec<DecodeResult>>> {
+pub fn decode(input: String, options: Option<DecodeOptions>) -> Option<Either<DecodeResult, Vec<DecodeResult>>> {
     let options = options.unwrap_or_default();
     let mut hints: DecodingHintDictionary = HashMap::new();
 
@@ -85,9 +105,9 @@ pub fn decode(file_name: String, options: Option<DecodeOptions>) -> Option<Eithe
         hints.insert(DecodeHintType::ALSO_INVERTED, DecodeHintValue::AlsoInverted(also_inverted));
     }
 
-    if let Some(try_harder) = options.try_harder {
-        hints.insert(DecodeHintType::TRY_HARDER, DecodeHintValue::TryHarder(try_harder));
-    }
+    // Default to true if not specified
+    let try_harder = options.try_harder.unwrap_or(true);
+    hints.insert(DecodeHintType::TRY_HARDER, DecodeHintValue::TryHarder(try_harder));
 
     if let Some(barcode_format) = options.barcode_format {
         let barcode_format: Vec<BarcodeFormat> = barcode_format.into_iter().map(|x| x.into()).collect();
@@ -96,35 +116,91 @@ pub fn decode(file_name: String, options: Option<DecodeOptions>) -> Option<Eithe
         )));
     }
 
-    let path = Path::new(&file_name);
+    let decode_multi = options.decode_multi.unwrap_or(false);
+    match get_input(&input) {
+        Either::A(input_file) => {
+            detect_in_file(input_file, decode_multi, &mut hints)
+        }
+        Either::B(luma_tuple) => {
+            detect_in_luma(luma_tuple, decode_multi, &mut hints)
+        }
+    }
+}
+
+fn get_input(input: &str) -> Either<&str, (Vec<u8>, u32, u32)> {
+    match DataUrl::process(input) {
+        Ok(data_url) => {
+            if let Ok((body, _)) = data_url.decode_to_vec() {
+                Either::B(create_luma_image(&body))
+            } else {
+                Either::A(input)
+            }
+        }
+        Err(_) => { // invalid data url
+            if let Ok(bytes) = general_purpose::STANDARD.decode(input.as_bytes()) {
+                Either::B(create_luma_image(&bytes))
+            } else {
+                Either::A(input)
+            }
+        }
+    }
+}
+
+fn create_luma_image(bytes: &[u8]) -> (Vec<u8>, u32, u32) {
+    let image = image::load_from_memory(bytes).unwrap();
+    let image = image.to_luma8();
+    let (width, height) = image.dimensions();
+    let image = image.into_raw();
+
+    (image, width, height)
+}
+
+fn detect_in_file(input_file: &str, decode_multi: bool, hints: &mut DecodingHintDictionary) -> Option<Either<DecodeResult, Vec<DecodeResult>>> {
+    let path = Path::new(&input_file);
     let extension = path.extension().unwrap_or_default();
 
-    if options.decode_multi == Some(true) {
-        let results = if extension == "svg" {
-            rxing::helpers::detect_multiple_in_svg_with_hints(&file_name, &mut hints)
+    if decode_multi {
+        let result = if extension == "svg" {
+            rxing::helpers::detect_multiple_in_svg_with_hints(input_file, hints)
         } else {
-            rxing::helpers::detect_multiple_in_file_with_hints(&file_name, &mut hints)
+            rxing::helpers::detect_multiple_in_file_with_hints(input_file, hints)
         };
-
-        match results {
-            Ok(results) => {
-                let results: Vec<DecodeResult> = results.into_iter().map(|x| x.into()).collect();
-                Some(Either::B(results))
-            }
-            Err(_search_err) => None,
-        }
+        process_multi_result(result)
     } else {
         let result = if extension == "svg" {
-            rxing::helpers::detect_in_svg_with_hints(&file_name, None, &mut hints)
+            rxing::helpers::detect_in_svg_with_hints(input_file, None, hints)
         } else {
-            rxing::helpers::detect_in_file_with_hints(&file_name, None, &mut hints)
+            rxing::helpers::detect_in_file_with_hints(input_file, None, hints)
         };
 
-        match result {
-            Ok(result) => {
-                Some(Either::A(result.into()))
-            }
-            Err(_search_err) => None,
+        if let Ok(result) = result {
+            Some(Either::A(result.into()))
+        } else {
+            None
         }
+    }
+}
+
+fn detect_in_luma(luma_tuple: (Vec<u8>, u32, u32), decode_multi: bool, hints: &mut DecodingHintDictionary) -> Option<Either<DecodeResult, Vec<DecodeResult>>> {
+    if decode_multi {
+        let result = rxing::helpers::detect_multiple_in_luma_with_hints(luma_tuple.0, luma_tuple.1, luma_tuple.2, hints);
+        process_multi_result(result)
+    } else {
+        let result = rxing::helpers::detect_in_luma_with_hints(luma_tuple.0, luma_tuple.1, luma_tuple.2, None, hints);
+
+        if let Ok(result) = result {
+            Some(Either::A(result.into()))
+        } else {
+            None
+        }
+    }
+}
+
+fn process_multi_result<E>(results: Result<Vec<RXingResult>, E>) -> Option<Either<DecodeResult, Vec<DecodeResult>>> {
+    if let Ok(results) = results {
+        let results: Vec<DecodeResult> = results.into_iter().map(|x| x.into()).collect();
+        Some(Either::B(results))
+    } else {
+        None
     }
 }

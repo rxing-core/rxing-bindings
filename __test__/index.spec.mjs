@@ -13,7 +13,21 @@ test('encode', async (t) => {
     t.is(decode(path.join(__dirname, '__qrcode.jpg')).text, 'hello, world')
 })
 
+test('encode output to file', async (t) => {
+    encode('hello, world', { outputFile: path.join(__dirname, '__output.jpg') })
+    t.is(decode(path.join(__dirname, '__output.jpg')).text, 'hello, world')
+})
+
 test('decode', (t) => {
     t.is(decode(path.join(__dirname, 'qrcode.jpg')).text, 'hello, world')
 })
 
+test('decode base64', async (t) => {
+    const base64 = await fs.readFile(path.join(__dirname, 'qrcode.jpg'), { encoding: 'base64' });
+    t.is(decode(base64).text, 'hello, world')
+})
+
+test('decode base64 data url', async (t) => {
+    const base64 = await fs.readFile(path.join(__dirname, 'qrcode.jpg'), { encoding: 'base64' });
+    t.is(decode(`data:image/jpeg;base64,${base64}`).text, 'hello, world')
+})

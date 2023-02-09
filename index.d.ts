@@ -62,6 +62,22 @@ export interface EncodeOptions {
   code128Compact?: boolean
   outputFile?: string
 }
+/**
+ * Encode a barcode from a string, returning a buffer representing the image
+ *
+ * @param {string} data The data to encode
+ * @param {EncodeOptions} [options] Optional options to pass to the encoder
+ *
+ * @returns {Buffer|null} A buffer representing the encoded barcode, or `null` if the barcode could not be encoded or encountered an error
+ *
+ * @example
+ * const { encode } = require('@rxing/rxing');
+ * const fs = require('fs');
+ *
+ * const data = 'Hello World!';
+ * const buffer = encode(data);
+ * fs.writeFileSync('hello-world.png', buffer);
+*/
 export function encode(data: string, options?: EncodeOptions | undefined | null): Buffer | null
 export interface DecodeOptions {
   tryHarder?: boolean
@@ -83,4 +99,20 @@ export interface DecodeResult {
   numBits: number
   format: BarcodeFormat
 }
-export function decode(fileName: string, options?: DecodeOptions | undefined | null): DecodeResult | Array<DecodeResult> | null
+/**
+ * Decode a barcode from a file or base64 string
+ *
+ * @param {string} input Either a path to a file or a base64 string
+ * @param {DecodeOptions} [options] Optional options to pass to the decoder
+ *
+ * @returns {DecodeResult|Array<DecodeResult>|null} The decode result or a list of decode results if `options.decodeMulti` is set to `true`, or `null` if the barcode could not be decoded or encountered an error
+ *
+ * @example
+ * const { decode } = require('@rxing/rxing');
+ * const result = decode('path/to/file.png');
+ * console.log(result.text);
+ * // Or
+ * const result = decode('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA');
+ * console.log(result.text);
+*/
+export function decode(input: string, options?: DecodeOptions | undefined | null): DecodeResult | Array<DecodeResult> | null
