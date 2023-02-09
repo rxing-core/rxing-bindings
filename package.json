@@ -1,6 +1,6 @@
 {
   "name": "@rxing/rxing",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Node.js bindings for the rxing library, which is a Rust port of the ZXing barcode library.",
   "keywords": [
     "rxing",
