@@ -4,9 +4,9 @@
 extern crate napi_derive;
 
 mod barcode_format;
-mod encode;
 mod decode;
+mod encode;
 
 pub use barcode_format::*;
-pub use encode::*;
 pub use decode::*;
+pub use encode::*;
