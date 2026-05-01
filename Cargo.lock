@@ -1571,6 +1571,19 @@ checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
 
 [[package]]
 name = "rxing"
+version = "0.0.0"
+dependencies = [
+ "base64",
+ "data-url",
+ "image",
+ "napi",
+ "napi-build",
+ "napi-derive",
+ "rxing 0.9.0",
+]
+
+[[package]]
+name = "rxing"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3aefd165a3981417d9b5b8557ee04aae5eb8acf1596804bd52fb1d4828edc45"
@@ -1594,19 +1607,6 @@ dependencies = [
  "unicode-segmentation",
  "uriparse",
  "urlencoding",
-]
-
-[[package]]
-name = "rxing-bindings"
-version = "0.0.0"
-dependencies = [
- "base64",
- "data-url",
- "image",
- "napi",
- "napi-build",
- "napi-derive",
- "rxing",
 ]
 
 [[package]]

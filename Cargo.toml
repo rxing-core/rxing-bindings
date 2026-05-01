@@ -1,6 +1,6 @@
 [package]
 edition = "2021"
-name = "rxing-bindings"
+name = "rxing"
 version = "0.0.0"
 
 [lib]

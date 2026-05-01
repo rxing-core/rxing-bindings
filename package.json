@@ -1,6 +1,6 @@
 {
   "name": "@rxing/rxing",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Node.js bindings for the rxing library, which is a Rust port of the ZXing barcode library.",
   "keywords": [
     "rxing",
@@ -33,8 +33,8 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@napi-rs/cli": "^2.14.6",
-    "ava": "^5.1.1"
+    "@napi-rs/cli": "^3.6.2",
+    "ava": "^8.0.0"
   },
   "ava": {
     "timeout": "3m"
