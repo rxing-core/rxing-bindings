@@ -8,7 +8,7 @@ use base64::Engine;
 use base64::engine::general_purpose;
 use data_url::DataUrl;
 use napi::bindgen_prelude::Either;
-use rxing::{BarcodeFormat, DecodeHintType, DecodeHintValue, DecodingHintDictionary, RXingResult};
+use rxing::{BarcodeFormat, DecodeHintType, DecodeHintValue, DecodeHints, DecodingHintDictionary, RXingResult};
 
 use crate::barcode_format::JsBarcodeFormat;
 
@@ -116,6 +116,8 @@ pub fn decode(input: String, options: Option<DecodeOptions>) -> Option<Either<De
         )));
     }
 
+    let mut hints = DecodeHints::from(hints);
+
     let decode_multi = options.decode_multi.unwrap_or(false);
     match get_input(&input) {
         Either::A(input_file) => {
@@ -155,7 +157,7 @@ fn create_luma_image(bytes: &[u8]) -> (Vec<u8>, u32, u32) {
     (image, width, height)
 }
 
-fn detect_in_file(input_file: &str, decode_multi: bool, hints: &mut DecodingHintDictionary) -> Option<Either<DecodeResult, Vec<DecodeResult>>> {
+fn detect_in_file(input_file: &str, decode_multi: bool, hints: &mut DecodeHints) -> Option<Either<DecodeResult, Vec<DecodeResult>>> {
     let path = Path::new(&input_file);
     let extension = path.extension().unwrap_or_default();
 
@@ -181,7 +183,7 @@ fn detect_in_file(input_file: &str, decode_multi: bool, hints: &mut DecodingHint
     }
 }
 
-fn detect_in_luma(luma_tuple: (Vec<u8>, u32, u32), decode_multi: bool, hints: &mut DecodingHintDictionary) -> Option<Either<DecodeResult, Vec<DecodeResult>>> {
+fn detect_in_luma(luma_tuple: (Vec<u8>, u32, u32), decode_multi: bool, hints: &mut DecodeHints) -> Option<Either<DecodeResult, Vec<DecodeResult>>> {
     if decode_multi {
         let result = rxing::helpers::detect_multiple_in_luma_with_hints(luma_tuple.0, luma_tuple.1, luma_tuple.2, hints);
         process_multi_result(result)

@@ -126,12 +126,13 @@ pub fn encode(data: String, options: Option<EncodeOptions>) -> Option<Buffer> {
         &barcode_format.into(),
         width as i32,
         height as i32,
-        &hints,
+        &rxing::EncodeHints::from(hints),
     ) {
         let image: DynamicImage = bit_matrix.into();
         let mut bytes: Vec<u8> = Vec::new();
 
-        if image.write_to(&mut Cursor::new(&mut bytes), image::ImageOutputFormat::Jpeg(100)).is_ok() {
+        // if image.write_to(&mut Cursor::new(&mut bytes), image::ImageOutputFormat::Jpeg(100)).is_ok() {
+        if image.write_to(&mut Cursor::new(&mut bytes), image::ImageFormat::Jpeg).is_ok() {
             if let Some(file_path) = options.output_file {
                 if write_to_file(&file_path, &bytes).is_ok() {
                     Some(Buffer::from(bytes))

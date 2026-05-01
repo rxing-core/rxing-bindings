@@ -54,6 +54,11 @@ pub enum JsBarcodeFormat {
     /** UPC-E 1D format. */
     UpcE,
 
+    MicroQrCode,
+    RectangularMicroQrCode,
+    Telepen,
+    DXFilmEdge,
+
     /** UPC/EAN extension format. Not a stand-alone format. */
     UpcEanExtension,
 
@@ -82,7 +87,11 @@ impl From<JsBarcodeFormat> for BarcodeFormat {
             JsBarcodeFormat::UpcE => BarcodeFormat::UPC_E,
             JsBarcodeFormat::UpcEanExtension => BarcodeFormat::UPC_EAN_EXTENSION,
             JsBarcodeFormat::UnsupportedFormat => BarcodeFormat::UNSUPORTED_FORMAT,
-        }
+            JsBarcodeFormat::MicroQrCode => BarcodeFormat::MICRO_QR_CODE,
+            JsBarcodeFormat::RectangularMicroQrCode => BarcodeFormat::RECTANGULAR_MICRO_QR_CODE,
+            JsBarcodeFormat::Telepen => BarcodeFormat::TELEPEN,
+            JsBarcodeFormat::DXFilmEdge => BarcodeFormat::DXFilmEdge,
+                    }
     }
 }
 
@@ -107,6 +116,10 @@ impl From<BarcodeFormat> for JsBarcodeFormat {
             BarcodeFormat::UPC_E => JsBarcodeFormat::UpcE,
             BarcodeFormat::UPC_EAN_EXTENSION => JsBarcodeFormat::UpcEanExtension,
             BarcodeFormat::UNSUPORTED_FORMAT => JsBarcodeFormat::UnsupportedFormat,
-        }
+            BarcodeFormat::MICRO_QR_CODE => JsBarcodeFormat::MicroQrCode,
+            BarcodeFormat::RECTANGULAR_MICRO_QR_CODE => JsBarcodeFormat::RectangularMicroQrCode,
+            BarcodeFormat::TELEPEN => JsBarcodeFormat::Telepen,
+            BarcodeFormat::DXFilmEdge => JsBarcodeFormat::DXFilmEdge,
+                    }
     }
 }
