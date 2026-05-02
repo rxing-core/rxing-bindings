@@ -413,7 +413,7 @@ jobs:
       - name: Setup and run tests
         uses: addnab/docker-run-action@v3
         with:
-          image: node:${{ matrix.node }}-bullseye-slim
+          image: node:${{ matrix.node }}-bookworm-slim
           options: '--platform linux/arm/v7 -v ${{ github.workspace }}:/build -w /build'
           run: |
             set -e
