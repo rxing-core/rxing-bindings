@@ -230,7 +230,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bindings-${{ matrix.settings.target }}
           path: .
@@ -262,7 +262,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bindings-x86_64-unknown-linux-gnu
           path: .
@@ -296,7 +296,7 @@ jobs:
           yarn config set supportedArchitectures.libc "musl"
           yarn install
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bindings-x86_64-unknown-linux-musl
           path: .
@@ -320,7 +320,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bindings-aarch64-unknown-linux-gnu
           path: .
@@ -354,7 +354,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bindings-aarch64-unknown-linux-musl
           path: .
@@ -394,7 +394,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bindings-armv7-unknown-linux-gnueabihf
           path: .
@@ -435,12 +435,12 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Download macOS x64 artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bindings-x86_64-apple-darwin
           path: artifacts
       - name: Download macOS arm64 artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bindings-aarch64-apple-darwin
           path: artifacts
@@ -475,7 +475,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
       - name: Move artifacts
