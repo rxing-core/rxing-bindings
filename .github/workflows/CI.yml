@@ -46,7 +46,12 @@ jobs:
           - host: ubuntu-latest
             target: x86_64-unknown-linux-musl
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
-            build: set -e && apk add --no-cache -X https://dl-cdn.alpinelinux.org/alpine/edge/main openssl sqlite-libs nodejs && ln -sf /usr/bin/node /usr/local/bin/node && rustup update stable && yarn build && strip *.node
+            build: set -e &&
+              apk add --no-cache curl &&
+              curl -fsSL https://unofficial-builds.nodejs.org/download/release/v22.15.0/node-v22.15.0-linux-x64-musl.tar.xz | tar -xJ -C /usr/local --strip-components=1 &&
+              rustup update stable &&
+              yarn build &&
+              strip *.node
           - host: macos-latest
             target: aarch64-apple-darwin
             build: |
@@ -77,7 +82,13 @@ jobs:
           - host: ubuntu-latest
             target: aarch64-unknown-linux-musl
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
-            build: set -e && apk add --no-cache -X https://dl-cdn.alpinelinux.org/alpine/edge/main openssl sqlite-libs nodejs && ln -sf /usr/bin/node /usr/local/bin/node && rustup update stable && rustup target add aarch64-unknown-linux-musl && yarn build --target aarch64-unknown-linux-musl && /aarch64-linux-musl-cross/bin/aarch64-linux-musl-strip *.node
+            build: set -e &&
+              apk add --no-cache curl &&
+              curl -fsSL https://unofficial-builds.nodejs.org/download/release/v22.15.0/node-v22.15.0-linux-x64-musl.tar.xz | tar -xJ -C /usr/local --strip-components=1 &&
+              rustup update stable &&
+              rustup target add aarch64-unknown-linux-musl &&
+              yarn build --target aarch64-unknown-linux-musl &&
+              /aarch64-linux-musl-cross/bin/aarch64-linux-musl-strip *.node
           - host: windows-latest
             target: aarch64-pc-windows-msvc
             build: yarn build --target aarch64-pc-windows-msvc
