@@ -1,15 +1,26 @@
 {
   "name": "@rxing/rxing-darwin-universal",
-  "version": "0.0.2",
-  "os": [
-    "darwin"
-  ],
+  "version": "0.0.3",
   "main": "rxing.darwin-universal.node",
   "files": [
     "rxing.darwin-universal.node"
   ],
+  "description": "Node.js bindings for the rxing library, which is a Rust port of the ZXing barcode library.",
+  "keywords": [
+    "rxing",
+    "zxing",
+    "barcode",
+    "qrcode",
+    "encode",
+    "decode",
+    "rust",
+    "napi"
+  ],
   "license": "MIT",
   "engines": {
     "node": ">= 10"
-  }
+  },
+  "os": [
+    "darwin"
+  ]
 }

@@ -1,9 +1,6 @@
 {
   "name": "@rxing/rxing-win32-x64-msvc",
-  "version": "0.0.2",
-  "os": [
-    "win32"
-  ],
+  "version": "0.0.3",
   "cpu": [
     "x64"
   ],
@@ -11,8 +8,22 @@
   "files": [
     "rxing.win32-x64-msvc.node"
   ],
+  "description": "Node.js bindings for the rxing library, which is a Rust port of the ZXing barcode library.",
+  "keywords": [
+    "rxing",
+    "zxing",
+    "barcode",
+    "qrcode",
+    "encode",
+    "decode",
+    "rust",
+    "napi"
+  ],
   "license": "MIT",
   "engines": {
     "node": ">= 10"
-  }
+  },
+  "os": [
+    "win32"
+  ]
 }

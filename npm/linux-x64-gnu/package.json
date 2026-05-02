@@ -1,9 +1,6 @@
 {
   "name": "@rxing/rxing-linux-x64-gnu",
-  "version": "0.0.2",
-  "os": [
-    "linux"
-  ],
+  "version": "0.0.3",
   "cpu": [
     "x64"
   ],
@@ -11,10 +8,24 @@
   "files": [
     "rxing.linux-x64-gnu.node"
   ],
+  "description": "Node.js bindings for the rxing library, which is a Rust port of the ZXing barcode library.",
+  "keywords": [
+    "rxing",
+    "zxing",
+    "barcode",
+    "qrcode",
+    "encode",
+    "decode",
+    "rust",
+    "napi"
+  ],
   "license": "MIT",
   "engines": {
     "node": ">= 10"
   },
+  "os": [
+    "linux"
+  ],
   "libc": [
     "glibc"
   ]
