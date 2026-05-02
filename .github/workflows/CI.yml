@@ -2,7 +2,7 @@ name: CI
 env:
   DEBUG: napi:*
   APP_NAME: rxing
-  MACOSX_DEPLOYMENT_TARGET: '10.13'
+  MACOSX_DEPLOYMENT_TARGET: '11.0'
 'on':
   push:
     branches:
@@ -247,9 +247,9 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '14'
-          - '16'
-          - '18'
+          - '20'
+          - '21'
+          - '22'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -279,9 +279,9 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '14'
-          - '16'
-          - '18'
+          - '20'
+          - '21'
+          - '22'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -313,9 +313,9 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '14'
-          - '16'
-          - '18'
+          - '20'
+          - '21'
+          - '22'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -387,9 +387,9 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '14'
-          - '16'
-          - '18'
+          - '20'
+          - '21'
+          - '22'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

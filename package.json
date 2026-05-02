@@ -48,7 +48,7 @@
     "build:debug": "napi build --platform",
     "prepublishOnly": "napi prepublish -t npm",
     "test": "ava",
-    "universal": "napi universal",
+    "universal": "napi universalize",
     "version": "napi version"
   },
   "packageManager": "yarn@3.4.1"
