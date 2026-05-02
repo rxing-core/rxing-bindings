@@ -1,4 +1,4 @@
-# rxing-bindings
+# rxing-bindings v0.0.3
 
 Node.js bindings for the [rxing](https://github.com/hschimke/rxing) library, which is a Rust port of the [ZXing](https://github.com/zxing/zxing) barcode library.
 
