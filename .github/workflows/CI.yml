@@ -47,7 +47,7 @@ jobs:
             target: x86_64-unknown-linux-musl
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
             build: set -e &&
-              apk add --no-cache curl &&
+              apk add --no-cache curl xz &&
               curl -fsSL https://unofficial-builds.nodejs.org/download/release/v22.15.0/node-v22.15.0-linux-x64-musl.tar.xz | tar -xJ -C /usr/local --strip-components=1 &&
               rustup update stable &&
               yarn build &&
@@ -83,7 +83,7 @@ jobs:
             target: aarch64-unknown-linux-musl
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
             build: set -e &&
-              apk add --no-cache curl &&
+              apk add --no-cache curl xz &&
               curl -fsSL https://unofficial-builds.nodejs.org/download/release/v22.15.0/node-v22.15.0-linux-x64-musl.tar.xz | tar -xJ -C /usr/local --strip-components=1 &&
               rustup update stable &&
               rustup target add aarch64-unknown-linux-musl &&
